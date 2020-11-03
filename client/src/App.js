@@ -15,6 +15,9 @@ class App extends Component {
     this.state = {
       loggedIn: token ? true : false,
       nowPlaying: { name: 'Not Checked', albumArt: '' },
+      topArtists: [],
+      artist1: { name: '', popularity: 0 },
+      artist2: { name: '', popularity: 0 },
     };
   }
   getHashParams() {
@@ -40,6 +43,28 @@ class App extends Component {
       });
     });
   }
+
+  getTopArtists() {
+    spotifyApi.getMyTopArtists().then((response) => {
+      console.log(response);
+      this.setState({
+        topArtists: response.items,
+      });
+      console.log(this.state.topArtists);
+    });
+    this.getRandomArtist();
+  }
+
+  getRandomArtist() {
+    if (this.state.topArtists) {
+      let a1 = this.state.topArtists[Math.floor(Math.random() * this.state.topArtists.length)];
+      let a2 = this.state.topArtists[Math.floor(Math.random() * this.state.topArtists.length)];
+      this.state.artist1.name = a1.name;
+      this.state.artist1.popularity = a1.popularity;
+      this.state.artist2.name = a2.name;
+      this.state.artist2.popularity = a2.popularity;
+    }
+  }
   render() {
     return (
       <div className="App">
@@ -49,8 +74,14 @@ class App extends Component {
           <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }} alt="" />
         </div>
         {this.state.loggedIn && (
-          <button onClick={() => this.getNowPlaying()}>Check Now Playing</button>
+          <div>
+            <button onClick={() => this.getNowPlaying()}>Check Now Playing</button>
+            <button onClick={() => this.getTopArtists()}>Check Top Artists</button>
+          </div>
         )}
+        <div>
+          Who is more popular? {this.state.artist1.name} or {this.state.artist2.name}?
+        </div>
       </div>
     );
   }
