@@ -14,7 +14,6 @@ class App extends Component {
     }
     this.state = {
       loggedIn: token ? true : false,
-      nowPlaying: { name: 'Not Checked', albumArt: '' },
       topArtists: [],
       artist1: { name: '', popularity: 0 },
       artist2: { name: '', popularity: 0 },
@@ -33,50 +32,46 @@ class App extends Component {
     return hashParams;
   }
 
-  getNowPlaying() {
-    spotifyApi.getMyCurrentPlaybackState().then((response) => {
-      this.setState({
-        nowPlaying: {
-          name: response.item.name,
-          albumArt: response.item.album.images[0].url,
-        },
-      });
-    });
+  shuffle(array) {
+    var currentIndex = array.length,
+      temporaryValue,
+      randomIndex;
+
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+
+    return array;
   }
 
   getTopArtists() {
     spotifyApi.getMyTopArtists().then((response) => {
-      console.log(response);
+      this.shuffle(response.items);
+      let a1 = response.items[0];
+      let a2 = response.items[1];
       this.setState({
         topArtists: response.items,
+        artist1: { name: a1.name, popularity: a1.popularity },
+        artist2: { name: a2.name, popularity: a2.popularity },
       });
-      console.log(this.state.topArtists);
     });
-    this.getRandomArtist();
   }
 
-  getRandomArtist() {
-    if (this.state.topArtists) {
-      let a1 = this.state.topArtists[Math.floor(Math.random() * this.state.topArtists.length)];
-      let a2 = this.state.topArtists[Math.floor(Math.random() * this.state.topArtists.length)];
-      this.state.artist1.name = a1.name;
-      this.state.artist1.popularity = a1.popularity;
-      this.state.artist2.name = a2.name;
-      this.state.artist2.popularity = a2.popularity;
-    }
-  }
   render() {
     return (
       <div className="App">
         <a href="http://localhost:8888"> Login to Spotify </a>
-        <div>Now Playing: {this.state.nowPlaying.name}</div>
-        <div>
-          <img src={this.state.nowPlaying.albumArt} style={{ height: 150 }} alt="" />
-        </div>
         {this.state.loggedIn && (
           <div>
-            <button onClick={() => this.getNowPlaying()}>Check Now Playing</button>
-            <button onClick={() => this.getTopArtists()}>Check Top Artists</button>
+            <button onClick={() => this.getTopArtists()}>Compare your artists</button>
           </div>
         )}
         <div>
