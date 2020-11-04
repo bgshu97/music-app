@@ -53,7 +53,7 @@ class App extends Component {
   }
 
   getTopArtists() {
-    spotifyApi.getMyTopArtists().then((response) => {
+    spotifyApi.getMyTopArtists({ limit: 50 }).then((response) => {
       this.shuffle(response.items);
       let a1 = response.items[0];
       let a2 = response.items[1];
