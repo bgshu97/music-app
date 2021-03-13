@@ -17,6 +17,7 @@ class App extends Component {
       topArtists: [],
       artist1: { name: '', popularity: 0 },
       artist2: { name: '', popularity: 0 },
+      score: 0,
     };
   }
   getHashParams() {
@@ -65,6 +66,17 @@ class App extends Component {
     });
   }
 
+  artistSelected(num) {
+    switch (num) {
+      case 1:
+        this.state.artist1.popularity > this.state.artist2.popularity ? this.setState({ score: this.state.score + 1 }) : null;
+        break;
+      case 2:
+        this.state.artist2.popularity > this.state.artist1.popularity ? this.setState({ score: this.state.score + 1 }) : null;
+    }
+    this.getTopArtists();
+  }
+
   render() {
     return (
       <div className="App">
@@ -75,7 +87,14 @@ class App extends Component {
           </div>
         )}
         <div>
-          Who is more popular? {this.state.artist1.name} or {this.state.artist2.name}?
+          Who is more popular on Spotify currently?
+        </div>
+        <div>
+          <button onClick={() => this.artistSelected(1)}>{this.state.artist1.name}</button> or
+          <button onClick={() => this.artistSelected(2)}>{this.state.artist2.name}</button>?
+        </div>
+        <div>
+          Score: {this.state.score}
         </div>
       </div>
     );
